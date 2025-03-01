@@ -1,4 +1,4 @@
-﻿namespace Snoutical.ScriptSummaries.Tools.Generation
+﻿namespace Snoutical.ScriptSummaries.Generation.Constants
 {
     public static class GenerationConstants
     {

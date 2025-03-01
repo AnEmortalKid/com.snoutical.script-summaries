@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR && SCRIPT_SUMMARIES_INSTALLED
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,11 +7,12 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Snoutical.ScriptSummaries.Generation.Constants;
 using Snoutical.ScriptSummaries.Setup.Settings;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace Snoutical.ScriptSummaries.Tools.Generation
+namespace Snoutical.ScriptSummaries.Generation.Generator
 {
     public static class DocumentationGenerator
     {
@@ -288,4 +288,3 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
         }
     }
 }
-#endif

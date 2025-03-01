@@ -1,7 +1,8 @@
-﻿using Snoutical.ScriptSummaries.Tools.Generation.Database;
+﻿using Snoutical.ScriptSummaries.Generation.Constants;
+using Snoutical.ScriptSummaries.Generation.Database;
 using UnityEngine;
 
-namespace Snoutical.ScriptSummaries.Tools.Generation.API
+namespace Snoutical.ScriptSummaries.Generation.API
 {
     /// <summary>
     /// API over the InternalSummaryDatabase so other assemblies in this package can fetch summaries
@@ -15,7 +16,11 @@ namespace Snoutical.ScriptSummaries.Tools.Generation.API
         /// <returns>a summary if it exists or null</returns>
         public static string GetEditorSummary(string scriptPath)
         {
-            // TODO add safeguards
+#if !SCRIPT_SUMMARIES_INSTALLED
+        Debug.LogWarning("⚠️ Script Summaries system is not installed. Returning null.");
+        return null;
+#endif
+
             return InternalSummaryDatabase.GetSummaryByPathInternal(scriptPath);
         }
 
@@ -26,8 +31,11 @@ namespace Snoutical.ScriptSummaries.Tools.Generation.API
         /// <returns>Summary text or null if not found.</returns>
         public static string GetEditorSummary(MonoBehaviour monoBehaviour)
         {
-            // TODO add safeguards
-            
+#if !SCRIPT_SUMMARIES_INSTALLED
+        Debug.LogWarning("⚠️ Script Summaries system is not installed. Returning null.");
+        return null;
+#endif
+
             System.Type type = monoBehaviour.GetType();
             // get namespaced class
             string className = type.FullName;

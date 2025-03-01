@@ -1,7 +1,7 @@
-﻿#if UNITY_EDITOR && SCRIPT_SUMMARIES_INSTALLED
+﻿using Snoutical.ScriptSummaries.Generation.Generator;
 using UnityEditor;
 
-namespace Snoutical.ScriptSummaries.Tools.Generation.Menu
+namespace Snoutical.ScriptSummaries.Generation.Menu
 {
     public class RegenerateMenu
     {
@@ -15,4 +15,3 @@ namespace Snoutical.ScriptSummaries.Tools.Generation.Menu
         }
     }
 }
-#endif

@@ -1,0 +1,18 @@
+﻿{
+  "name": "ScriptSummaries.Editor.Generation",
+  "rootNamespace": "Snoutical.ScriptSummaries.Editor.Generation",
+  "references": ["ScriptSummaries.Editor.Setup"],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Microsoft.CodeAnalysis.dll",
+    "Microsoft.CodeAnalysis.CSharp.dll",
+    "System.Reflection.Metadata.dll",
+    "System.Collections.Immutable.dll",
+    "System.Runtime.CompilerServices.Unsafe.dll"
+  ],
+  "autoReferenced": true,
+  "defineConstraints": ["SCRIPT_SUMMARIES_INSTALLED"]
+}

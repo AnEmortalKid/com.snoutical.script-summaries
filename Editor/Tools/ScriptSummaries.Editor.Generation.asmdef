@@ -1,9 +1,0 @@
-﻿{
-  "name": "ScriptSummaries.Editor.Generation",
-  "rootNamespace": "Snoutical.ScriptSummaries.Editor.Generation",
-  "references": ["ScriptSummaries.Editor.Setup"],
-  "includePlatforms": ["Editor"],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false
-}

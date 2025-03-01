@@ -1,6 +1,7 @@
-﻿using Snoutical.ScriptSummaries.Tools.Generation.API;
+﻿
 using UnityEditor;
 using UnityEngine;
+using Snoutical.ScriptSummaries.Generation.API;
 
 namespace Snoutical.ScriptSummaries.Editor.UI
 {

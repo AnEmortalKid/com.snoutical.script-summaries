@@ -1,4 +1,4 @@
-﻿namespace Snoutical.ScriptSummaries.Tools.Generation
+﻿namespace Snoutical.ScriptSummaries.Generation.Generator
 {
     /// <summary>
     /// Tracks the summary for a given script and attributes we use to store that data in our various files

@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using Snoutical.ScriptSummaries.Generation.Generator;
 using UnityEngine;
 
-namespace Snoutical.ScriptSummaries.Tools.Generation
+namespace Snoutical.ScriptSummaries.Generation.Database
 {
-    // TODO make this an InternalDatabase and have a Runtime that can fetch these summaries
-    // so a user could build the monobehavior inspector with tooltip but i dont wanna force that
-    // on everyone
     /// <summary>
-    /// Holds a reference to our summaries, this is just a wrapper around a dictionary
-    /// since it felt yucky to me to access a public static dictionary somewhere else
+    /// Internal component that manages storing our summaries
     /// </summary>
-    public static class DocumentationLookup
+    internal static class InternalSummaryDatabase
     {
         /// <summary>
         /// Store summaries by script relative to the project root so Assets/Scripts/MyScript.cs
@@ -38,50 +35,26 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
             summariesByFileName.Clear();
         }
 
-        public static int GetSummaryCount()
-        {
-            return summariesByFileName.Count;
-        }
-
-        public static void StoreSummary(string fileName, string summary)
-        {
-            summariesByFileName[fileName] = summary;
-        }
-
         /// <summary>
         /// Looks up a scripts stored summary by its relative script path
         /// </summary>
         /// <param name="scriptPath">A path to this script relative to the root, so Assets/Scripts/Blah</param>
-        /// <returns></returns>
-        public static string GetSummaryByPath(string scriptPath)
+        /// <returns>a summary if it exists or null</returns>
+        internal static string GetSummaryByPathInternal(string scriptPath)
         {
             Initialize();
             return summariesByFileName.TryGetValue(scriptPath, out var summary) ? summary : null;
         }
 
-        public static string GetSummary(MonoBehaviour monoBehaviour)
+        /// <summary>
+        /// Looks up a scripts stored summary based on the given monobehaviour
+        /// </summary>
+        /// <param name="summaryKey">The lookup key (Assembly;T:ClassName)</param>
+        /// <returns>a summary if it exists or null</returns>
+        internal static string GetSummaryByKeyInternal(string summaryKey)
         {
             Initialize();
-
-            System.Type type = monoBehaviour.GetType();
-            // get namespaced class
-            string className = type.FullName;
-            string assemblyName = type.Assembly.GetName().Name;
-
-            if (string.IsNullOrEmpty(assemblyName))
-            {
-                assemblyName = GenerationConstants.FallbackAssemblyName;
-            }
-
-            string summaryKey = $"{assemblyName};T:{className}";
-            if (summariesByAssemblyTypeKey.TryGetValue(summaryKey, out var summary))
-            {
-                return summary;
-            }
-
-            ;
-
-            return null;
+            return summariesByAssemblyTypeKey.TryGetValue(summaryKey, out var summary) ? summary : null;
         }
 
         private static void LoadToMemory()

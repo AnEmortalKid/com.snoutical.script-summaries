@@ -1,8 +1,6 @@
 ﻿using System;
 
-#if UNITY_EDITOR && SCRIPT_SUMMARIES_INSTALLED
-
-namespace Snoutical.ScriptSummaries.Tools.Generation
+namespace Snoutical.ScriptSummaries.Generation.Generator
 {
     /// <summary>
     /// A wrapper around the json assembly def so we can read some properties
@@ -13,4 +11,3 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
         public string name;
     }
 }
-#endif
