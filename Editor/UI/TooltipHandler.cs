@@ -1,14 +1,16 @@
-﻿#if UNITY_EDITOR && SCRIPT_SUMMARIES_INSTALLED
-using Snoutical.ScriptSummaries.Tools.Generation;
+﻿using Snoutical.ScriptSummaries.Tools.Generation.API;
 using UnityEditor;
 using UnityEngine;
 
-namespace Snoutical.ScriptSummaries.Editor.Tools.UI
+namespace Snoutical.ScriptSummaries.Editor.UI
 {
+    /// <summary>
+    /// Adds a tooltip to scripts in the assets view with a small preview summary
+    /// </summary>
     [InitializeOnLoad]
-    public class ScriptSummaryTooltipProvider : MonoBehaviour
+    public class TooltipHandler
     {
-        static ScriptSummaryTooltipProvider()
+        static TooltipHandler()
         {
             EditorApplication.projectWindowItemOnGUI += ShowTooltipForScripts;
         }
@@ -20,7 +22,7 @@ namespace Snoutical.ScriptSummaries.Editor.Tools.UI
             // Only check .cs files
             if (path.EndsWith(".cs"))
             {
-                string summary = DocumentationLookup.GetSummaryByPath(path);
+                string summary = EditorSummaryAPI.GetEditorSummary(path);
 
                 if (!string.IsNullOrEmpty(summary) && selectionRect.Contains(Event.current.mousePosition))
                 {
@@ -32,4 +34,3 @@ namespace Snoutical.ScriptSummaries.Editor.Tools.UI
         }
     }
 }
-#endif
