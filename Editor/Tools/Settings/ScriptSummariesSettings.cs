@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace Snoutical.ScriptSummaries.Settings
 {
-    [CreateAssetMenu(fileName = "ScriptSummariesSettings", menuName = "Script Summaries/Settings", order = 0)]
     public class ScriptSummariesSettings : ScriptableObject
     {
+        [Tooltip("Folders to scan for summary documentation. Select directories from Assets.")]
+        public DefaultAsset[] ScanDirectories;
     }
 }

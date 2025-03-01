@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Snoutical.ScriptSummaries.Settings;
 using UnityEngine;
 using UnityEditor;
 
@@ -19,6 +20,63 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
         /// We'll store an XML file for each assembly here with all the summaries for each assembly in one XML
         /// </summary>
         public static readonly string OutputDirectory = "Library/ScriptSummaries/";
+
+        public static void RunRegeneration()
+        {
+            string[] userDefined = GetScanPaths();
+            // normalize paths 
+            string assetsBasePath = NormalizePath(Application.dataPath);
+
+            // do everything if there's nothing specified to filter
+            string[] allScripts = Directory.GetFiles(assetsBasePath, "*.cs", SearchOption.AllDirectories);
+
+            // TODO support excluding later
+            string[] filteredPaths = allScripts
+                .Where(path =>
+                {
+                    var normalizedPath = NormalizePath(path);
+
+                    // compare normalized paths, scanDir should also come back normalized
+                    return userDefined.Any(
+                        scanDir => normalizedPath.StartsWith(
+                            NormalizePath(Path.Combine(assetsBasePath, scanDir)), StringComparison.OrdinalIgnoreCase));
+                })
+                .ToArray();
+
+            GenerateScriptSummaries(filteredPaths);
+        }
+
+        private static string NormalizePath(string rawPath)
+        {
+            return rawPath.Replace("\\", "/");
+        }
+
+        /// <summary>
+        /// Gets paths to scan relative to Assets
+        /// </summary>
+        /// <returns>names of scan folders in relation to the Assets/ dir</returns>
+        private static string[] GetScanPaths()
+        {
+            var settings = ScriptSummariesSettingsUtility.FetchSettings();
+            if (settings == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            // convert paths to strings
+            var scanDirs = settings.ScanDirectories;
+
+            return
+                // safeguard against bad entries
+                scanDirs.Where(dir => dir != null)
+                    // ensure its a path not an object since we do any asset pick
+                    .Select(AssetDatabase.GetAssetPath)
+                    // Only care about folders
+                    .Where(AssetDatabase.IsValidFolder)
+                    // Drop Assets/ from the path so we can then match properly by using the Application.dataPath
+                    .Select(path => NormalizePath(path.Replace("Assets/", "")))
+                    .ToArray();
+        }
 
         /// <summary>
         /// Generates the XML summary for each script in the given path.
@@ -35,23 +93,78 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
             // TODO do we need to clean if assemblies or whatever change
             // probably
 
-            var xmlBuilders = GetXmlsByAssembly(scriptPaths);
-
-            // write them out
-            foreach (var entry in xmlBuilders)
-            {
-                string outputPath = Path.Combine(OutputDirectory, $"{entry.Key}.xml");
-                File.WriteAllText(outputPath, entry.Value.ToString());
-            }
+            // Potentially eventually store the full XML and show it somewhere
+            var summaries = GenerateMappings(scriptPaths);
+            GenerateXmls(summaries);
+            GenerateLookupFiles(summaries);
 
             AssetDatabase.Refresh();
             Debug.Log($"XML documentation generated in {OutputDirectory}");
         }
 
-        private static Dictionary<string, StringBuilder> GetXmlsByAssembly(string[] scriptPaths)
+        private static void GenerateXmls(List<SummaryMapping> summaryMappings)
         {
             // store the content of each XML as we process files
             var xmlDocBuilders = new Dictionary<string, StringBuilder>();
+
+            foreach (var mapping in summaryMappings)
+            {
+                var assemblyName = mapping.assemblyName;
+                if (!xmlDocBuilders.ContainsKey(assemblyName))
+                {
+                    xmlDocBuilders[assemblyName] = new StringBuilder();
+                    xmlDocBuilders[assemblyName].AppendLine("<doc>");
+                    xmlDocBuilders[assemblyName].AppendLine("  <members>");
+                }
+
+                xmlDocBuilders[assemblyName].AppendLine($"    <member name=\"{mapping.memberIdentifier}\">");
+                xmlDocBuilders[assemblyName].AppendLine($"      <summary>{mapping.summary}</summary>");
+                xmlDocBuilders[assemblyName].AppendLine("    </member>");
+            }
+
+            // close the xmls before we write them
+            foreach (var entry in xmlDocBuilders)
+            {
+                entry.Value.AppendLine("  </members>");
+                entry.Value.AppendLine("</doc>");
+            }
+
+            foreach (var entry in xmlDocBuilders)
+            {
+                string outputPath = Path.Combine(OutputDirectory, $"{entry.Key}.xml");
+                File.WriteAllText(outputPath, entry.Value.ToString());
+            }
+        }
+
+        private static void GenerateLookupFiles(List<SummaryMapping> summaryMappings)
+        {
+            // store the content of each lookup file as we parse through
+            var lookupBuilders = new Dictionary<string, StringBuilder>();
+
+            foreach (var mapping in summaryMappings)
+            {
+                var assemblyName = mapping.assemblyName;
+
+                if (!lookupBuilders.ContainsKey(assemblyName))
+                {
+                    lookupBuilders[assemblyName] = new StringBuilder();
+                }
+
+                var lookupKey = mapping.assemblyName + ";" + mapping.memberIdentifier;
+                lookupBuilders[assemblyName].AppendLine($"{mapping.relativePath}={lookupKey}");
+            }
+
+            foreach (var entry in lookupBuilders)
+            {
+                string outputPath = Path.Combine(OutputDirectory, $"{entry.Key}.lookup");
+                File.WriteAllText(outputPath, entry.Value.ToString());
+            }
+        }
+
+        private static List<SummaryMapping> GenerateMappings(string[] scriptPaths)
+        {
+            List<SummaryMapping> summaryMappings = new();
+
             foreach (var script in scriptPaths)
             {
                 try
@@ -59,6 +172,8 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
                     string fileContent = File.ReadAllText(script);
                     var syntaxTree = CSharpSyntaxTree.ParseText(fileContent);
                     var root = syntaxTree.GetRoot();
+
+                    SummaryMapping currentMapping = new();
 
                     // Get the assembly name the script belongs to
                     string assemblyName = GetAssemblyNameForScript(script);
@@ -69,11 +184,8 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
                         continue;
                     }
 
-                    if (!xmlDocBuilders.ContainsKey(assemblyName))
-                    {
-                        xmlDocBuilders[assemblyName] = new StringBuilder();
-                        xmlDocBuilders[assemblyName].AppendLine("<doc>");
-                    }
+                    summaryMappings.Add(currentMapping);
+                    currentMapping.assemblyName = assemblyName;
 
                     var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
                     foreach (var classNode in classes)
@@ -81,9 +193,25 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
                         var summary = GetXmlSummary(classNode);
                         if (!string.IsNullOrEmpty(summary))
                         {
-                            xmlDocBuilders[assemblyName].AppendLine($"  <class name=\"{classNode.Identifier.Text}\">");
-                            xmlDocBuilders[assemblyName].AppendLine($"    <summary>{summary}</summary>");
-                            xmlDocBuilders[assemblyName].AppendLine("  </class>");
+                            // Normalize path so we can look it up later
+                            string relativeScriptPath = script.Replace("\\", "/");
+                            // store path with Assets/ItsPath since thats what we'll look up
+                            relativeScriptPath = relativeScriptPath.Replace(Application.dataPath + "/", "Assets/");
+                            currentMapping.relativePath = relativeScriptPath;
+
+                            var namespaceNode = classNode.Ancestors().OfType<NamespaceDeclarationSyntax>()
+                                .FirstOrDefault();
+                            string namespaceName =
+                                namespaceNode != null ? namespaceNode.Name.ToString() : ""; // Empty if no namespace
+                            string className = classNode.Identifier.Text;
+
+                            // Include namespace if available
+                            var memberId = !string.IsNullOrEmpty(namespaceName)
+                                ? $"T:{namespaceName}.{className}"
+                                : $"T:{className}";
+                            currentMapping.memberIdentifier = memberId;
+
+                            currentMapping.summary = summary;
                         }
                     }
                 }
@@ -93,13 +221,7 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
                 }
             }
 
-            // close the xml document
-            foreach (var entry in xmlDocBuilders)
-            {
-                entry.Value.AppendLine("</doc>");
-            }
-
-            return xmlDocBuilders;
+            return summaryMappings;
         }
 
         private static string GetAssemblyNameForScript(string scriptPath)
@@ -119,7 +241,7 @@ namespace Snoutical.ScriptSummaries.Tools.Generation
                 directory = Directory.GetParent(directory)?.FullName;
             }
 
-            return "ScriptSummaries_Fallback";
+            return GenerationConstants.FallbackAssemblyName;
         }
 
         /// <summary>
