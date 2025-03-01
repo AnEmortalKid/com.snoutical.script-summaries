@@ -2,14 +2,14 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Snoutical.ScriptSummaries.Settings
+namespace Snoutical.ScriptSummaries.Setup.Settings
 {
-    public class ScriptSummariesSettingsUtility
+    public static class ScriptSummariesSettingsUtility
     {
         /// <summary>
         /// Path to write into correctly
         /// </summary>
-        private static readonly string settingsPath =
+        public static readonly string SettingsPath =
             Path.Combine(Application.dataPath, "ScriptSummariesSettings.asset");
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Snoutical.ScriptSummaries.Settings
         public static ScriptSummariesSettings CreateOrFetch()
         {
             // select it if it exists
-            if (File.Exists(settingsPath))
+            if (File.Exists(SettingsPath))
             {
                 ScriptSummariesSettings loaded = FetchSettings();
                 return loaded;
@@ -38,7 +38,7 @@ namespace Snoutical.ScriptSummaries.Settings
             var settings = ScriptableObject.CreateInstance<ScriptSummariesSettings>();
 
             // Ensure the directory exists
-            string directory = Path.GetDirectoryName(settingsPath);
+            string directory = Path.GetDirectoryName(SettingsPath);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);

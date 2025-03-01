@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Snoutical.ScriptSummaries.Settings
+namespace Snoutical.ScriptSummaries.Setup.Settings
 {
     public class ScriptSummariesSettings : ScriptableObject
     {

@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Snoutical.ScriptSummaries.Settings;
+using Snoutical.ScriptSummaries.Setup.Settings;
 using UnityEngine;
 using UnityEditor;
 
