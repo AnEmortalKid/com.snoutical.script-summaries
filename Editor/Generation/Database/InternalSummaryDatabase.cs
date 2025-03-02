@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using Snoutical.ScriptSummaries.Generation.Generator;
 
 namespace Snoutical.ScriptSummaries.Generation.Database
@@ -21,6 +20,16 @@ namespace Snoutical.ScriptSummaries.Generation.Database
         private static Dictionary<string, string> summariesByAssemblyTypeKey = new();
 
         private static bool isInitialized;
+
+        /// <summary>
+        /// A helper object for looking up data from the .lookup file
+        /// </summary>
+        private static LookupLoader lookupLoader = new();
+
+        /// <summary>
+        /// A helper object for looking up data from the .xml file
+        /// </summary>
+        private static XmlDocumentationLoader xmlDocLoader = new();
 
         /// <summary>
         /// Re-Initializes the Database from files to memory
@@ -70,6 +79,7 @@ namespace Snoutical.ScriptSummaries.Generation.Database
 
         private static void LoadToMemory()
         {
+            // The generation process creates the directory and the files
             if (!Directory.Exists(DocumentationGenerator.OutputDirectory))
             {
                 return;
@@ -84,7 +94,7 @@ namespace Snoutical.ScriptSummaries.Generation.Database
             var assemblyXmlMappings = new Dictionary<string, Dictionary<string, string>>();
             foreach (var xmlPath in allXmls)
             {
-                var dictionary = FetchXmlEntries(xmlPath);
+                var dictionary = xmlDocLoader.GetSummaries(xmlPath);
                 var storedAssemblyName = Path.GetFileNameWithoutExtension(xmlPath);
                 assemblyXmlMappings[storedAssemblyName] = dictionary;
             }
@@ -93,17 +103,12 @@ namespace Snoutical.ScriptSummaries.Generation.Database
             var allLookups = Directory.GetFiles(DocumentationGenerator.OutputDirectory, "*.lookup");
             foreach (var lookupFile in allLookups)
             {
-                foreach (var line in File.ReadLines(lookupFile))
+                foreach (var result in lookupLoader.GetLookups(lookupFile))
                 {
-                    // i wrote it so it should be ok right
-                    var parts = line.Split('=');
-
-                    string scriptPath = parts[0].Trim();
-                    string namespacedTypeKey = parts[1].Trim();
-
-                    var namespacedParts = namespacedTypeKey.Split(";");
-                    var assembly = namespacedParts[0];
-                    var typeKey = namespacedParts[1];
+                    var assembly = result.assembly;
+                    var typeKey = result.typeName;
+                    var scriptPath = result.scriptPath;
+                    var namespacedTypeKey = result.namespacedTypeKey;
 
                     // now lookup the typeKey in the right assembly
                     if (assemblyXmlMappings[assembly].TryGetValue(typeKey, out var summary))
@@ -113,29 +118,6 @@ namespace Snoutical.ScriptSummaries.Generation.Database
                     }
                 }
             }
-        }
-
-        private static Dictionary<string, string> FetchXmlEntries(string xmlPath)
-        {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(xmlPath);
-
-            Dictionary<string, string> xmlSummaries = new();
-
-            // its very possible at some point we may have the full member docs generated
-            foreach (XmlNode memberNode in xmlDoc.SelectNodes("/doc/members/member"))
-            {
-                // It should exist in form T:Namespace?.ClassName
-                var memberIdentifier = memberNode.Attributes["name"].Value;
-                var summaryNode = memberNode.SelectSingleNode("summary");
-
-                if (memberIdentifier != null && summaryNode != null)
-                {
-                    xmlSummaries[memberIdentifier] = summaryNode.InnerText.Trim();
-                }
-            }
-
-            return xmlSummaries;
         }
     }
 }

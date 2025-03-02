@@ -4,13 +4,13 @@
 using Snoutical.ScriptSummaries.Generation.API;
 #endif
 
-namespace Snoutical.ScriptSummaries.Runtime.API
+namespace Snoutical.ScriptSummaries.API
 {
     /// <summary>
     /// Publicly exposed API for retrieving summary's for scripts
-    /// Intended so others can build tooling around this
+    /// Intended so others can build editor tooling around this library
     /// </summary>
-    public static class ScriptSummaryRuntime
+    public static class ScriptSummaries
     {
         /// <summary>
         /// Retrieves the summary docs for the given MonoBehaviour if they exist

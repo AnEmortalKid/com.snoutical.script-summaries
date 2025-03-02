@@ -1,0 +1,14 @@
+﻿{
+  "name": "ScriptSummaries.Editor.Tests",
+  "rootNamespace": "Snoutical.ScriptSummaries.Editor.Test",
+  "references": [
+    "ScriptSummaries.Editor.Setup",
+    "ScriptSummaries.Editor.Generation"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

@@ -1,6 +1,6 @@
 ﻿{
-  "name": "ScriptSummaries.Runtime",
-  "rootNamespace": "Snoutical.ScriptSummaries.Runtime",
+  "name": "ScriptSummaries.Editor.API",
+  "rootNamespace": "Snoutical.ScriptSummaries.API",
   "references": [
     "ScriptSummaries.Editor.Generation"
   ],
