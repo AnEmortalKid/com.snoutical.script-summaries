@@ -26,6 +26,10 @@ namespace Snoutical.ScriptSummaries.Setup.Settings
             return AssetDatabase.LoadAssetAtPath<ScriptSummariesSettings>(relativePath);
         }
 
+        /// <summary>
+        /// Creates a new ScriptSummariesSettings or creates one
+        /// </summary>
+        /// <returns>a settings object</returns>
         public static ScriptSummariesSettings CreateOrFetch()
         {
             // select it if it exists

@@ -1,5 +1,8 @@
 ﻿namespace Snoutical.ScriptSummaries.Generation.Constants
 {
+    /// <summary>
+    /// Constants used within the generation process
+    /// </summary>
     public static class GenerationConstants
     {
         /// <summary>

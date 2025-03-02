@@ -21,8 +21,13 @@ namespace Snoutical.ScriptSummaries.Generation.Generator
         /// </summary>
         public static readonly string OutputDirectory = "Library/ScriptSummaries/";
 
+        /// <summary>
+        /// Regenerates all the documentation objects
+        /// </summary>
         public static void RunRegeneration()
         {
+            CleanLibrary();
+            
             string[] userDefined = GetScanPaths();
             // normalize paths 
             string assetsBasePath = NormalizePath(Application.dataPath);
@@ -78,20 +83,35 @@ namespace Snoutical.ScriptSummaries.Generation.Generator
                     .ToArray();
         }
 
+        private static void CleanLibrary()
+        {
+            if (!Directory.Exists(OutputDirectory))
+            {
+                return;
+            }
+
+            string[] oldFiles = Directory.GetFiles(OutputDirectory, "*.xml")
+                .Concat(Directory.GetFiles(OutputDirectory, "*.lookup"))
+                .ToArray();
+
+            foreach (string file in oldFiles)
+            {
+                File.Delete(file);
+            }
+        }
+
         /// <summary>
         /// Generates the XML summary for each script in the given path.
         /// Each script has its summary stored in an XML file based on its closest assembly.
         /// If an assembly cannot be found, the summary lands in a fallback XML file
         /// </summary>
         /// <param name="scriptPaths">the array of paths to csharp files (.cs) to generate docs for</param>
-        public static void GenerateScriptSummaries(string[] scriptPaths)
+        private static void GenerateScriptSummaries(string[] scriptPaths)
         {
             if (!Directory.Exists(OutputDirectory))
             {
                 Directory.CreateDirectory(OutputDirectory);
             }
-            // TODO do we need to clean if assemblies or whatever change
-            // probably
 
             // Potentially eventually store the full XML and show it somewhere
             var summaries = GenerateMappings(scriptPaths);

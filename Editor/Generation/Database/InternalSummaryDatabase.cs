@@ -2,7 +2,6 @@
 using System.IO;
 using System.Xml;
 using Snoutical.ScriptSummaries.Generation.Generator;
-using UnityEngine;
 
 namespace Snoutical.ScriptSummaries.Generation.Database
 {
@@ -23,16 +22,20 @@ namespace Snoutical.ScriptSummaries.Generation.Database
 
         private static bool isInitialized;
 
-        public static void Initialize()
+        /// <summary>
+        /// Re-Initializes the Database from files to memory
+        /// </summary>
+        internal static void ReInitialize()
         {
-            // TODO find a way to not call this every time we do a lookup
+            isInitialized = false;
             LoadToMemory();
             isInitialized = true;
         }
 
-        public static void ClearSummaries()
+        private static void ClearSummaries()
         {
             summariesByFileName.Clear();
+            summariesByAssemblyTypeKey.Clear();
         }
 
         /// <summary>
@@ -42,7 +45,11 @@ namespace Snoutical.ScriptSummaries.Generation.Database
         /// <returns>a summary if it exists or null</returns>
         internal static string GetSummaryByPathInternal(string scriptPath)
         {
-            Initialize();
+            if (!isInitialized)
+            {
+                return null;
+            }
+
             return summariesByFileName.TryGetValue(scriptPath, out var summary) ? summary : null;
         }
 
@@ -53,7 +60,11 @@ namespace Snoutical.ScriptSummaries.Generation.Database
         /// <returns>a summary if it exists or null</returns>
         internal static string GetSummaryByKeyInternal(string summaryKey)
         {
-            Initialize();
+            if (!isInitialized)
+            {
+                return null;
+            }
+
             return summariesByAssemblyTypeKey.TryGetValue(summaryKey, out var summary) ? summary : null;
         }
 
