@@ -33,7 +33,6 @@ namespace Snoutical.ScriptSummaries.Editor.Generation.Handler
                 return;
             }
 
-            Debug.Log("Scripts reloaded, regenerating documentation...");
             ScriptSummariesManager.RegenerateAndReload();
             // not calling asset database refresh since our files land in Library
         }

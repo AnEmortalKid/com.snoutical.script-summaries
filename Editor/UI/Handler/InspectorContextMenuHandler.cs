@@ -1,15 +1,16 @@
-﻿using UnityEditor;
+﻿using Snoutical.ScriptSummaries.Editor.UI.Window;
+using UnityEditor;
 using UnityEngine;
 using Snoutical.ScriptSummaries.Generation.API;
 
 namespace Snoutical.ScriptSummaries.Editor.UI
 {
     /// <summary>
-    /// Adds a show documentation option to the default context menu
+    /// Adds a show documentation option to the default context menu on an inspector
     /// </summary>
-    public class ContextMenuHandler
+    public class InspectorContextMenuHandler
     {
-        [MenuItem("CONTEXT/MonoBehaviour/📜 Show Docs")]
+        [MenuItem("CONTEXT/MonoBehaviour/📜 Show Summary")]
         private static void ShowContextMenu(MenuCommand command)
         {
             MonoBehaviour script = command.context as MonoBehaviour;
@@ -19,8 +20,9 @@ namespace Snoutical.ScriptSummaries.Editor.UI
             }
 
             var summary = EditorSummaryAPI.GetEditorSummary(script);
+            var scriptName =script.GetType().Name;
             string displayText = string.IsNullOrEmpty(summary) ? "No documentation available." : summary;
-            EditorUtility.DisplayDialog("📖 Script Documentation", displayText, "OK");
+            ScriptSummaryPopupWindow.ShowWindow(scriptName, displayText);
         }
     }
 }

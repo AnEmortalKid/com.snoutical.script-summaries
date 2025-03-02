@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using Snoutical.ScriptSummaries.Editor.Common.Logger;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
@@ -92,7 +93,7 @@ namespace Snoutical.ScriptSummaries.Setup
 
             if (!install)
             {
-                Debug.LogError(
+                ScriptSummariesLogger.LogError(
                     "❌ Required dependencies were not installed. The package may not function correctly.");
                 return;
             }
@@ -105,11 +106,15 @@ namespace Snoutical.ScriptSummaries.Setup
                 AddCompilerDefine("SCRIPT_SUMMARIES_INSTALLED");
 
                 AssetDatabase.Refresh();
-                Debug.Log("✅ Installation complete!");
+                ScriptSummariesLogger.Log("✅ Installation complete!");
                 EditorUtility.DisplayDialog("Installation Complete",
                     "All dependencies have been installed successfully.", "OK");
             }
-            // TODO ERROR 
+            else
+            {
+                ScriptSummariesLogger.LogError(
+                    "❌ Missing dependencies still, package will not work correctly.");
+            }
         }
 
         private static void InstallDependencies()
@@ -128,7 +133,8 @@ namespace Snoutical.ScriptSummaries.Setup
             }
             catch (Exception ex)
             {
-                Debug.LogError("❌ Installation failed: " + ex.Message);
+                // Forcing the user to see this
+                ScriptSummariesLogger.LogError("❌ Installation failed: " + ex.Message, true);
             }
         }
 
@@ -140,7 +146,7 @@ namespace Snoutical.ScriptSummaries.Setup
             using (WebClient client = new WebClient())
             {
                 string packageUrl = NuGetUrl + package;
-                Debug.Log($"🔹 Downloading {package} from {packageUrl}...");
+                ScriptSummariesLogger.Log($"🔹 Downloading {package} from {packageUrl}...");
                 client.DownloadFile(packageUrl, packageDownloadPath);
             }
 
@@ -163,13 +169,14 @@ namespace Snoutical.ScriptSummaries.Setup
                     if (File.Exists(sourceFile))
                     {
                         File.Copy(sourceFile, destFile, true);
-                        Debug.Log($"✅ Installed {dll} from {package} to {pluginsPath}");
+                        ScriptSummariesLogger.Log($"✅ Installed {dll} from {package} to {pluginsPath}");
                     }
                 }
             }
             else
             {
-                Debug.LogError($"❌ Extraction failed for {package}. Could not find the expected directory.");
+                ScriptSummariesLogger.LogError(
+                    $"❌ Extraction failed for {package}. Could not find the expected directory.");
             }
         }
 
@@ -181,7 +188,7 @@ namespace Snoutical.ScriptSummaries.Setup
             {
                 symbols += $";{defineSymbol}";
                 PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Standalone, symbols);
-                Debug.Log($"✅ Added compiler define: {defineSymbol}");
+                ScriptSummariesLogger.Log($"✅ Added compiler define: {defineSymbol}");
             }
         }
     }

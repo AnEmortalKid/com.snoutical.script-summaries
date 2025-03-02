@@ -18,5 +18,9 @@ namespace Snoutical.ScriptSummaries.Setup.Settings
             Default value of 0 will show all lines.
         ")]
         public int TooltipLineLength;
+
+        [Header("Logging")]
+        [Tooltip("Whether the asset should log messages upon generation or not")]
+        public bool EnableDebugLogging;
     }
 }

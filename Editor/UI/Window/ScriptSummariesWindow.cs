@@ -17,10 +17,11 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
         public static void CreateWindow()
         {
             ScriptSummariesWindow wnd = GetWindowReference();
-            wnd.titleContent = new GUIContent("Script Notes");
+            wnd.titleContent = new GUIContent("Script Summaries");
         }
 
         private bool initialized;
+        private Label titleLabel;
         private VisualElement rightPane;
         private ListView leftPane;
 
@@ -30,26 +31,80 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
         public void CreateGUI()
         {
             VisualElement root = rootVisualElement;
+            root.style.flexDirection = FlexDirection.Column;
+            root.style.paddingLeft = 5;
+            root.style.paddingRight = 5;
+            root.style.paddingTop = 5;
+            root.style.paddingBottom = 5;
+
+
+            titleLabel = new Label
+            {
+                style =
+                {
+                    fontSize = 16,
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    marginBottom = 10
+                }
+            };
+            root.Add(titleLabel);
 
             // Create a two-pane view with the left pane being fixed.
             var splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
             root.Add(splitView);
 
-            leftPane = new ListView();
+            leftPane = new ListView
+            {
+                style =
+                {
+                    backgroundColor = new Color(0.15f, 0.15f, 0.15f, 1f),
+                    borderRightColor = Color.gray,
+                    borderRightWidth = 1,
+                    paddingTop = 5,
+                    paddingBottom = 5
+                },
+                selectionType = SelectionType.Single
+            };
             splitView.Add(leftPane);
             //leftPane.viewDataKey = "notes-selection";
             leftPane.makeItem = () => new Label()
             {
-                style = { fontSize = 14 }
+                style =
+                {
+                    fontSize = 14,
+                    paddingLeft = 10,
+                    paddingTop = 4,
+                    paddingBottom = 4
+                }
             };
             leftPane.bindItem = (item, index) =>
             {
-                (item as Label).text = PascalCaseToSpaced(loadedItems[index].Name);
+                if (item is Label label)
+                {
+                    label.text = PascalCaseToSpaced(loadedItems[index].Name);
+                    label.style.unityTextAlign = TextAnchor.MiddleLeft;
+                    label.style.paddingLeft = 10;
+
+                    // Highlight effect when selected
+                    label.RegisterCallback<PointerEnterEvent>(evt =>
+                        label.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f));
+                    label.RegisterCallback<PointerLeaveEvent>(evt => label.style.backgroundColor = Color.clear);
+                }
             };
             leftPane.itemsSource = loadedItems;
             leftPane.selectionChanged += OnMonoSelectionChange;
 
-            rightPane = new VisualElement();
+            rightPane = new VisualElement()
+            {
+                style =
+                {
+                    flexGrow = 1,
+                    paddingTop = 5,
+                    paddingLeft = 10,
+                    paddingRight = 10,
+                    backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f)
+                }
+            };
             splitView.Add(rightPane);
 
             initialized = true;
@@ -93,7 +148,7 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
         private void ClearItems()
         {
             ClearPanesAndData();
-            SetTabTitle("Script Notes");
+            SetTabTitle("");
             leftPane.RefreshItems();
         }
 
@@ -139,7 +194,7 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
                 processedScripts.Add(monoType.Name);
             }
 
-            SetTabTitle(selectedObj.name + " Notes");
+            SetTabTitle(selectedObj.name);
             leftPane.RefreshItems();
         }
 
@@ -159,6 +214,7 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
                 return;
             }
 
+            // TODO add the scrollview setup
             var label = new Label()
             {
                 style =
@@ -186,13 +242,12 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
         private static ScriptSummariesWindow GetWindowReference()
         {
             // Always get a reference without focus to avoid interrupting keybinds
-            return GetWindow<ScriptSummariesWindow>("Script Notes", false);
+            return GetWindow<ScriptSummariesWindow>("Script Summaries", false);
         }
 
-        private static void SetTabTitle(string windowTitle)
+        private void SetTabTitle(string windowTitle)
         {
-            ScriptSummariesWindow wnd = GetWindowReference();
-            wnd.titleContent.text = windowTitle;
+            titleLabel.text = windowTitle;
         }
     }
 }

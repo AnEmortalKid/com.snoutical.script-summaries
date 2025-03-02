@@ -122,6 +122,7 @@ namespace Snoutical.ScriptSummaries.Generation.Database
 
             Dictionary<string, string> xmlSummaries = new();
 
+            // its very possible at some point we may have the full member docs generated
             foreach (XmlNode memberNode in xmlDoc.SelectNodes("/doc/members/member"))
             {
                 // It should exist in form T:Namespace?.ClassName

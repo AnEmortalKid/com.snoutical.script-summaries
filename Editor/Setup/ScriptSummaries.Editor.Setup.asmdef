@@ -1,8 +1,7 @@
 {
     "name": "ScriptSummaries.Editor.Setup",
     "rootNamespace": "Snoutical.ScriptSummaries",
-    "references": [
-    ],
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],

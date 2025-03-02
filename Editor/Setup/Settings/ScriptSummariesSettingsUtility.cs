@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Snoutical.ScriptSummaries.Editor.Common.Logger;
 using UnityEditor;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ namespace Snoutical.ScriptSummaries.Setup.Settings
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("✅ Created ScriptSummariesSettings at " + relativePath);
+            ScriptSummariesLogger.Log("✅ Created ScriptSummariesSettings at " + relativePath);
             return settings;
         }
     }

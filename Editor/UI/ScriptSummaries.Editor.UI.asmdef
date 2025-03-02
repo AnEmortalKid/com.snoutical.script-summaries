@@ -1,9 +1,15 @@
 ﻿{
   "name": "ScriptSummaries.Editor.UI",
   "rootNamespace": "Snoutical.ScriptSummaries.Editor.UI",
-  "references": ["ScriptSummaries.Editor.Generation"],
-  "includePlatforms": ["Editor"],
+  "references": [
+    "ScriptSummaries.Editor.Setup",
+    "ScriptSummaries.Editor.Generation"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
-  "overrideReferences": false
+  "overrideReferences": false,
+  "defineConstraints": ["SCRIPT_SUMMARIES_INSTALLED"]
 }

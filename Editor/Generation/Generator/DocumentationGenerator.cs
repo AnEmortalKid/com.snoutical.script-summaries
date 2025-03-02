@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Snoutical.ScriptSummaries.Editor.Common.Logger;
 using Snoutical.ScriptSummaries.Generation.Constants;
 using Snoutical.ScriptSummaries.Setup.Settings;
 using UnityEditor;
@@ -27,7 +28,7 @@ namespace Snoutical.ScriptSummaries.Generation.Generator
         public static void RunRegeneration()
         {
             CleanLibrary();
-            
+
             string[] userDefined = GetScanPaths();
             // normalize paths 
             string assetsBasePath = NormalizePath(Application.dataPath);
@@ -119,7 +120,7 @@ namespace Snoutical.ScriptSummaries.Generation.Generator
             GenerateLookupFiles(summaries);
 
             AssetDatabase.Refresh();
-            Debug.Log($"XML documentation generated in {OutputDirectory}");
+            ScriptSummariesLogger.Log($"XML documentation generated in {OutputDirectory}");
         }
 
         private static void GenerateXmls(List<SummaryMapping> summaryMappings)
