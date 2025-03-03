@@ -22,8 +22,11 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
 
         private bool initialized;
         private Label titleLabel;
-        private VisualElement rightPane;
+        
         private ListView leftPane;
+
+        private ScrollView contentScrolLView;
+        private Label contentLabel;
 
         private List<ScriptSummaryWindowItem> loadedItems = new();
         private HashSet<string> processedScripts = new();
@@ -94,7 +97,7 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
             leftPane.itemsSource = loadedItems;
             leftPane.selectionChanged += OnMonoSelectionChange;
 
-            rightPane = new VisualElement()
+            VisualElement rightPane = new VisualElement()
             {
                 style =
                 {
@@ -106,6 +109,31 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
                 }
             };
             splitView.Add(rightPane);
+
+            contentScrolLView = new ScrollView(ScrollViewMode.Vertical)
+            {
+                style =
+                {
+                    flexGrow = 1, // Ensures it expands to fill the pane
+                    backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f),
+                    paddingLeft = 10,
+                    paddingRight = 10,
+                    paddingTop = 5,
+                    paddingBottom = 5
+                }
+            };
+            rightPane.Add(contentScrolLView);
+
+            contentLabel = new Label()
+            {
+                style =
+                {
+                    fontSize = 14,
+                    // autowrap
+                    whiteSpace = WhiteSpace.Normal
+                }
+            };
+            contentScrolLView.Add(contentLabel);
 
             initialized = true;
         }
@@ -155,7 +183,7 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
         private void ClearPanesAndData()
         {
             loadedItems.Clear();
-            rightPane.Clear();
+            ResetContentParts();
             leftPane.ClearSelection();
             processedScripts.Clear();
         }
@@ -199,9 +227,16 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
         }
 
 
+        private void ResetContentParts()
+        {
+            contentLabel.text = "";
+            // scroll back to top
+            contentScrolLView.scrollOffset = Vector2.zero;
+        }
+        
         private void OnMonoSelectionChange(IEnumerable<object> selectedItems)
         {
-            rightPane.Clear();
+            ResetContentParts();
 
             using var enumerator = selectedItems.GetEnumerator();
             if (!enumerator.MoveNext())
@@ -214,18 +249,7 @@ namespace Snoutical.ScriptSummaries.Editor.UI.Window
                 return;
             }
 
-            // TODO add the scrollview setup
-            var label = new Label()
-            {
-                style =
-                {
-                    fontSize = 14,
-                    // autowrap
-                    whiteSpace = WhiteSpace.Normal
-                }
-            };
-            label.text = selected.Summary;
-            rightPane.Add(label);
+            contentLabel.text = selected.Summary;
         }
 
         private static string PascalCaseToSpaced(string input)

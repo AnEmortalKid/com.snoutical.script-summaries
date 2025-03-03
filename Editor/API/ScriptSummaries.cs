@@ -22,10 +22,10 @@ namespace Snoutical.ScriptSummaries.API
         {
 #if SCRIPT_SUMMARIES_INSTALLED
             return EditorSummaryAPI.GetEditorSummary(monoBehaviour);
-#endif
-
-            // safeguard
+#else
+            // fallback for define missing
             return null;
+#endif
         }
 
         /// <summary>
@@ -39,10 +39,10 @@ namespace Snoutical.ScriptSummaries.API
         {
 #if SCRIPT_SUMMARIES_INSTALLED
             return EditorSummaryAPI.GetEditorSummary(scriptPath);
-#endif
-
-            // safeguard
+#else
+            // fallback for define missing
             return null;
+#endif
         }
     }
 }
