@@ -2,10 +2,15 @@
   "name": "com.snoutical.script-summaries",
   "version": "0.1.0",
   "displayName": "Script Summaries",
-  "description": "A Unity package that extracts XML summaries from C# scripts using Roslyn, allowing better documentation integration.",
-  "unity": "2021.3",
+  "description": "A Unity package that extracts XML summaries from C# scripts using Roslyn, and displays those summaries in tooltips and context menus.",
+  "unity": "1.0.0",
   "dependencies": {},
-  "keywords": ["documentation", "roslyn", "xml-docs", "script summaries"],
+  "keywords": [
+    "documentation",
+    "roslyn",
+    "xml-docs",
+    "script summaries"
+  ],
   "author": {
     "name": "Snoutical",
     "email": "snoutical@gmail.com",

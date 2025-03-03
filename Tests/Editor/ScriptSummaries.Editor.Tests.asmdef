@@ -10,5 +10,6 @@
   ],
   "includePlatforms": [
     "Editor"
-  ]
+  ],
+  "defineConstraints": ["SCRIPT_SUMMARIES_INSTALLED"]
 }
