@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Snoutical.ScriptSummaries.Generation.Generator;
+using UnityEngine;
 
 namespace Snoutical.ScriptSummaries.Generation.Database
 {
@@ -20,6 +22,15 @@ namespace Snoutical.ScriptSummaries.Generation.Database
         private static Dictionary<string, string> summariesByAssemblyTypeKey = new();
 
         private static bool isInitialized;
+
+        static InternalSummaryDatabase()
+        {
+            // Unity will reload the App domain so reinitialize from files
+            // A doc regeneration will call re-initialize when its appropriate
+            // Its possible re-initialize gets called twice when domain reloading
+            // so if that starts being a problem we can optimize
+            ReInitialize();
+        }
 
         /// <summary>
         /// A helper object for looking up data from the .lookup file

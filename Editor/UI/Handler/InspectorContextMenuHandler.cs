@@ -20,7 +20,8 @@ namespace Snoutical.ScriptSummaries.Editor.UI
             }
 
             var summary = EditorSummaryAPI.GetEditorSummary(script);
-            var scriptName =script.GetType().Name;
+            var scriptName = script.GetType().Name;
+            // No validate function support so just display it
             string displayText = string.IsNullOrEmpty(summary) ? "No documentation available." : summary;
             ScriptSummaryPopupWindow.ShowWindow(scriptName, displayText);
         }

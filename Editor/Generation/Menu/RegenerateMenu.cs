@@ -1,4 +1,5 @@
-﻿using Snoutical.ScriptSummaries.Generation.Generator;
+﻿using Snoutical.ScriptSummaries.Editor.Generation;
+using Snoutical.ScriptSummaries.Generation.Generator;
 using UnityEditor;
 
 namespace Snoutical.ScriptSummaries.Generation.Menu
@@ -11,7 +12,7 @@ namespace Snoutical.ScriptSummaries.Generation.Menu
         [MenuItem("Tools/Script Summaries/Regenerate Docs")]
         public static void RegenerateFiles()
         {
-            DocumentationGenerator.RunRegeneration();
+            ScriptSummariesManager.RegenerateAndReload(true);
         }
     }
 }

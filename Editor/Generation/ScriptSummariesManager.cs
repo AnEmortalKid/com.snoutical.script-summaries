@@ -10,10 +10,11 @@ namespace Snoutical.ScriptSummaries.Editor.Generation
     {
         /// <summary>
         /// Regenerates the documentation and refreshes the summary database
+        /// <param name="isManual">whether invocation is manual or automatic</param>
         /// </summary>
-        public static void RegenerateAndReload()
+        public static void RegenerateAndReload(bool isManual = false)
         {
-            DocumentationGenerator.RunRegeneration();
+            DocumentationGenerator.RunRegeneration(isManual);
             InternalSummaryDatabase.ReInitialize();
         }
     }

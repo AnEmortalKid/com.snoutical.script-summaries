@@ -5,11 +5,13 @@ that documentation in various spots in the editor.
 
 The docs can be seen:
 
-* As a [tooltip](./tooltip.md) in the Project Window
+- As a [tooltip](./tooltip.md) in the Project Window
   ![](./Images/single_line_tooltip.png)
-* In a [modal popup](./summary_popup.md)
+
+- In a [modal popup](./summary_popup.md)
   ![](./Images/summary_popup_dialog_sample.png)
-* In a [contextual window](./summary_window.md) based on a selected MonoBehaviour
+
+- In a [contextual window](./summary_window.md) based on a selected MonoBehaviour
   ![](./Images/summary_window_demo.png)
 
 ## Quick Start
@@ -24,3 +26,7 @@ Script Summaries takes a couple of steps to setup before summaries will display:
 A runtime API is provided so you can build your own tooling, for example,
 building a custom inspector that shows the summary as a help message.
 ![](./Images/custom_inspector_sample.png)
+
+## Find out More
+
+See everything available in [Table Of Contents](./table_of_contents.md)

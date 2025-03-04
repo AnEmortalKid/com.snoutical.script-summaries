@@ -29,12 +29,20 @@ namespace Snoutical.ScriptSummaries.Generation.Generator
 
         /// <summary>
         /// Regenerates all the documentation objects
+        /// <param name="isManual">whether invocation is manual or automatic</param>
         /// </summary>
-        public static void RunRegeneration()
+        public static void RunRegeneration(bool isManual = false)
         {
             CleanLibrary();
 
             string[] userDefined = GetScanPaths();
+            if (userDefined.Length == 0)
+            {
+                // only force if it was manually asked for
+                ScriptSummariesLogger.LogWarning("No Scan Directories defined, no docs will be generated.", isManual);
+                return;
+            }
+
             // normalize paths 
             string assetsBasePath = PathUtils.NormalizePath(Application.dataPath);
 
