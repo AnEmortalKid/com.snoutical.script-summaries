@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "displayName": "Script Summaries",
   "description": "A Unity package that extracts XML summaries from C# scripts using Roslyn, and displays those summaries in tooltips and context menus.",
-  "unity": "1.0.0",
+  "unity": "2023.2",
   "dependencies": {},
   "keywords": [
     "documentation",
