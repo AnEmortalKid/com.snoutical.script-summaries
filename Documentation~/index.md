@@ -18,6 +18,7 @@ The docs can be seen:
 
 Script Summaries takes a couple of steps to setup before summaries will display:
 
+1. Install the package via Unity's Package manager with the gitURL `https://github.com/AnEmortalKid/com.snoutical.script-summaries.git`
 1. [Install](./installing.md) the package's dependencies
 2. [Settings](./settings.md) defining the directories we can read from
 
